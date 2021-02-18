@@ -8,13 +8,14 @@ class productos {
     }
     return this.productos;
   }
-  getItemsById(id) {
-    let data = this.validacionEsquema("get", { id });
-    if (!data) return this.error();
-    if (!this.productos.length) return this.noItems();
-    if (!this.productos[data.id]) return this.itemNotFound();
-    return this.productos[data.id];
-  }
+  getItemsById(id){
+    let data  = this.validacionEsquema('get',{id})
+    if(!data) return this.error()
+    if(!this.productos.length) return this.noItems()
+    let filtered = this.productos.filter((producto) => { return producto.id === data.id; });
+    if(filtered.length===0) return this.itemNotFound()
+    return filtered[0]
+}
 
   addItem(obj) {
     let data = this.validacionEsquema("post", obj);
@@ -31,25 +32,22 @@ class productos {
     this.productos = [...this.productos, { ...newProducto }];
     return newProducto;
   }
-  putItemById(obj) {
-    let data = this.validacionEsquema("put", obj);
-    if (!data) return this.error();
-    let id = data.id;
-    if (!this.productos[id]) return this.noItems();
-    let newProducto = { ...data };
-    this.productos[id] = { ...newProducto };
-    return newProducto;
-  }
-  deleteItemById(id) {
-    let data = this.validacionEsquema("delete", { id });
-    if (!data) return this.error();
-    if (!this.productos[data.id]) return this.noItems();
-    let filtered = this.productos.filter((producto) => {
-      return producto.id != data.id;
-    });
-    this.productos = filtered;
-    return this.productos;
-  }
+  putItemById(obj){
+    let data  = this.validacionEsquema('put',obj)
+    if(!data) return this.error()
+    let indexEncontrado = this.productos.findIndex((producto) => { return producto.id === data.id; });
+    if(indexEncontrado===-1) return this.itemNotFound()
+    this.productos[indexEncontrado] = {...data}
+    return data
+}
+deleteItemById(id){
+    let data  = this.validacionEsquema('delete',{id})
+    if(!data) return this.error()
+    let indexEncontrado = this.productos.findIndex((producto) => { return producto.id === data.id; });
+    if(indexEncontrado===-1) return this.itemNotFound()
+    this.productos.splice(indexEncontrado,1)
+    return this.productos
+}
 
   itemNotFound() {
     return {
